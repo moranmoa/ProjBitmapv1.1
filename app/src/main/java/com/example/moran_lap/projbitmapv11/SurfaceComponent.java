@@ -36,4 +36,6 @@ public class SurfaceComponent {
     public void setImagePositionOnSurface(Position position) {
         this.imagePositionOnSurface = position;
     }
+
+
 }
