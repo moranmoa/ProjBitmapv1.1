@@ -7,27 +7,17 @@ import android.graphics.Bitmap;
  */
 public abstract class ImageSource {
 
-    private boolean isEnabled;
+
     private int originalHeight;
     private int originalWidth;
     //private ImageReader imageReader;
 
     public ImageSource(){
-        isEnabled = true;
         //originalHeight = ...;
         //originalWidth = ...;
         //imageReader = ...;
     }
 
-    public boolean isEnabled() { return isEnabled; }
-
-    public void Enable() { isEnabled = true; }
-
-    public void Disable() { isEnabled = false; }
-
-    public void setIsEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
 
     public int getOriginalHeight() {
         return originalHeight;

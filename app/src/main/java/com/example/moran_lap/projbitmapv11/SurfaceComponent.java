@@ -5,8 +5,9 @@ import android.graphics.Bitmap;
 /**
  * Created by Gili on 08/04/2016.
  */
-public class SurfaceComponent {
+public class SurfaceComponent extends Thread{
 
+    private boolean isEnabled;
     private ImageSource imageSource;
     private Bitmap mBitmap;
     private Position imagePositionOnSurface;
@@ -37,5 +38,18 @@ public class SurfaceComponent {
         this.imagePositionOnSurface = position;
     }
 
+    public boolean isEnabled() { return isEnabled; }
+
+    public void Enable() { isEnabled = true; }
+
+    public void Disable() { isEnabled = false; }
+
+    public void Run() {
+        mBitmap = imageSource.getImage();
+    }
+
+    public Bitmap getBitmap() {
+        return mBitmap;
+    }
 
 }

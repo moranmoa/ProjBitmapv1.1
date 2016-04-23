@@ -19,10 +19,11 @@ public class Preview {
     private Canvas mCanvas;
     private ArrayList<SurfaceComponent> surfaceComponents;
 
-    public Preview(){
+    public Preview(Bitmap bitmap){
 
-        mBitmap = Bitmap.createBitmap(1400, 1600,  Bitmap.Config.ARGB_8888);
-        mBitmap.eraseColor(Color.RED);
+        //mBitmap = Bitmap.createBitmap(1400, 1600,  Bitmap.Config.ARGB_8888);
+        //mBitmap.eraseColor(Color.RED);
+        mBitmap = bitmap;
         ImageView imageview=(ImageView) ApplicationContext.getActivity().findViewById(R.id.imageView);
         imageview.setImageBitmap(mBitmap);
         mCanvas = new Canvas(mBitmap);

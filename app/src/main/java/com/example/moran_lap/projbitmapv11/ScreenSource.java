@@ -7,6 +7,7 @@ import android.view.View;
  * Created by Moran-Lap on 23/04/2016.
  */
 public class ScreenSource extends ImageSource {
+
     @Override
     public Bitmap getImage() {
         View v1;

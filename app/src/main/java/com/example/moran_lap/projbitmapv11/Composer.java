@@ -1,27 +1,30 @@
 package com.example.moran_lap.projbitmapv11;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.List;
 
 /**
  * Created by Gili on 08/04/2016.
  */
-public class Composer {
+public class Composer extends Thread{
 
     private Spinner mSpinner;
     private Preview mPreview;
+    private Bitmap mBitmap;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
     private boolean firstSelectionEvent = true;
+    private String[] SourcesStingsArray;
 
     class ItemSelectedListener implements AdapterView.OnItemSelectedListener{
 
@@ -43,13 +46,17 @@ public class Composer {
 
             switch(item){
                 case ("Camera") : //mSurfaceComponents.add(CameraSource);
+                    SourcesStingsArray[SourcesStingsArray.length] = "Camera";
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     break;
                 case ("Text") : //mSurfaceComponents.add(TextSource);
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     break;
-                case ("Screen") : //mSurfaceComponents.add(ScreenSource);
-                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                case ("Screen") :
+                    SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
+                    screenComponent.Enable();
+                    mSurfaceComponents.add(screenComponent);
+                    //canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     break;
                 case ("Image") : //mSurfaceComponents.add(PictureSource);
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
@@ -59,6 +66,7 @@ public class Composer {
             }
 
             mSpinner.setVisibility(View.GONE);
+
 
             // Showing selected spinner item
             // Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
@@ -71,7 +79,10 @@ public class Composer {
     }
 
     public Composer(){
-        mPreview = new Preview();
+
+        mBitmap = Bitmap.createBitmap(720, 1280,  Bitmap.Config.ARGB_8888);
+        mBitmap.eraseColor(Color.RED);
+        mPreview = new Preview(mBitmap);
 
         // Spinner element
         mSpinner = (Spinner) ApplicationContext.getActivity().findViewById(R.id.spinner);
@@ -105,4 +116,37 @@ public class Composer {
         mSpinner.setVisibility(View.VISIBLE);
     }
 
+    public void run(){
+        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+            if (surfaceComponent.isEnabled()) {
+                ((Thread) surfaceComponent).start();
+            }
+        }
+
+        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+            try {
+                ((Thread) surfaceComponent).join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        /*
+        for(int i=0; i<720; i++)
+            for(int j=0; j<1280; j++) {
+                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+                    if (surfaceComponent.isEnabled()) {
+                        if (i>=)
+                    }
+                }
+            }
+            */
+        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+            if (surfaceComponent.isEnabled()) {
+                mBitmap=surfaceComponent.getBitmap();
+            }
+        }
+    }
+
 }
+
+
