@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">ProjBitmapv1.1</string>
     <string name="action_settings">Settings</string>
-    <string name="gili_ping">Settings</string>
-    <string name="moa_pong">Settings</string>
-    <string name="gili2_ping">Settings</string>
-    <string name="moa2_pong">Settings</string>
+    <string name="spinner_title">Select Source</string>
 </resources>
