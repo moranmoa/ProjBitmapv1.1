@@ -1,11 +1,14 @@
 package com.example.moran_lap.projbitmapv11;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by Gili on 08/04/2016.
  */
 public class SurfaceComponent {
 
     private ImageSource imageSource;
+    private Bitmap mBitmap;
     private Position imagePositionOnSurface;
 
     public SurfaceComponent(ImageSource source, Position position){
