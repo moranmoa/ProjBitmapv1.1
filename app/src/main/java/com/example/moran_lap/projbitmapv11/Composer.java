@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -25,6 +26,10 @@ public class Composer extends Thread{
     private ArrayList<SurfaceComponent> mSurfaceComponents;
     private boolean firstSelectionEvent = true;
     private String[] SourcesStingsArray;
+    private Paint paint;
+    private Canvas canvas;
+    private Object mObj;
+    private ImageView mImageView;
 
     class ItemSelectedListener implements AdapterView.OnItemSelectedListener{
 
@@ -40,22 +45,26 @@ public class Composer extends Thread{
             String item = parent.getItemAtPosition(position).toString();
             //String item = parent.getSelectedItem().toString();
 
-            Paint paint = mPreview.getPaint();
             paint.setColor(Color.GREEN);
-            Canvas canvas = mPreview.getCanvas();
 
             switch(item){
                 case ("Camera") : //mSurfaceComponents.add(CameraSource);
-                    SourcesStingsArray[SourcesStingsArray.length] = "Camera";
+                    //SourcesStingsArray[SourcesStingsArray.length] = "Camera";
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    mImageView.invalidate();
                     break;
                 case ("Text") : //mSurfaceComponents.add(TextSource);
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    mImageView.invalidate();
                     break;
                 case ("Screen") :
                     SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
                     screenComponent.Enable();
                     mSurfaceComponents.add(screenComponent);
+
+                    synchronized (mObj) {
+                        mObj.notify();
+                    }
                     //canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     break;
                 case ("Image") : //mSurfaceComponents.add(PictureSource);
@@ -80,9 +89,14 @@ public class Composer extends Thread{
 
     public Composer(){
 
-        mBitmap = Bitmap.createBitmap(720, 1280,  Bitmap.Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(1280, 720,  Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.RED);
         mPreview = new Preview(mBitmap);
+        mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
+        mSurfaceComponents = new ArrayList<SurfaceComponent>();
+        mObj = new Object();
+        paint = mPreview.getPaint();
+        canvas = mPreview.getCanvas();
 
         // Spinner element
         mSpinner = (Spinner) ApplicationContext.getActivity().findViewById(R.id.spinner);
@@ -93,6 +107,7 @@ public class Composer extends Thread{
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
         //categories.add("Select Source");
+        categories.add("");
         categories.add("Camera");
         categories.add("Text");
         categories.add("Screen");
@@ -116,23 +131,33 @@ public class Composer extends Thread{
         mSpinner.setVisibility(View.VISIBLE);
     }
 
-    public void run(){
-        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-            if (surfaceComponent.isEnabled()) {
-                ((Thread) surfaceComponent).start();
-            }
-        }
 
-        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-            try {
-                ((Thread) surfaceComponent).join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void run() {
+        try {
+            synchronized (mObj) {
+                mObj.wait();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
+        while (true) {
+            if (mSurfaceComponents != null) {
+                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+                    if (surfaceComponent.isEnabled()) {
+                        ((Thread) surfaceComponent).start();
+                    }
+                }
+
+                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+                    try {
+                        ((Thread) surfaceComponent).join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
         /*
-        for(int i=0; i<720; i++)
-            for(int j=0; j<1280; j++) {
+        for(int i=0; i<1280; i++)
+            for(int j=0; j<720; j++) {
                 for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
                     if (surfaceComponent.isEnabled()) {
                         if (i>=)
@@ -140,13 +165,21 @@ public class Composer extends Thread{
                 }
             }
             */
-        for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-            if (surfaceComponent.isEnabled()) {
-                mBitmap=surfaceComponent.getBitmap();
+                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+                    if (surfaceComponent.isEnabled()) {
+                        paint.setColor(Color.GREEN);
+                        canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                        //mBitmap=surfaceComponent.getBitmap();
+                    }
+                }
+            }
+            try {
+                sleep(30);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
-
 }
 
 

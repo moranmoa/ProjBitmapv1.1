@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
  */
 public abstract class ImageSource {
 
-
     private int originalHeight;
     private int originalWidth;
     //private ImageReader imageReader;
@@ -17,7 +16,6 @@ public abstract class ImageSource {
         //originalWidth = ...;
         //imageReader = ...;
     }
-
 
     public int getOriginalHeight() {
         return originalHeight;
