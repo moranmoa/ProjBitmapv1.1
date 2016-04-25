@@ -9,11 +9,19 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.ListView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
     //Composer mComposer;
     //Button mStreamButton;
+    private ListView mListView;
+    private SurfaceComponentAdapter SCadapter;
+    private ArrayList<SurfaceComponent> mSurfaceComponents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +32,10 @@ public class MainActivity extends AppCompatActivity {
 
         ApplicationContext.setActivity(this);
         final Composer mComposer = new Composer();
+        mSurfaceComponents = mComposer.getmSurfaceComponents();
         //((Thread)mComposer).start();
+        mListView = (ListView) ApplicationContext.getActivity().findViewById(R.id.listView);
+        displaySurfaceComponentsList();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -38,6 +49,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        int pos = mListView.getPositionForView(buttonView);
+        if (pos != ListView.INVALID_POSITION) {
+            SurfaceComponent sp = mSurfaceComponents.get(pos);
+            sp.setIsEnabled(isChecked);
+            Toast.makeText(ApplicationContext.getActivity(),"Clicked on Source " + sp.getImageSource().getSourceName() +" State is: " + sp.isEnabled(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void displaySurfaceComponentsList(){
+        ImageSource im = new ScreenSource();
+        ImageSource imim = new CameraSource();
+        mSurfaceComponents.add(new SurfaceComponent(im));
+        mSurfaceComponents.add(new SurfaceComponent(imim));
+
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents);
+        mListView.setAdapter(SCadapter);
+    }
+
 
     @Override
     protected void onStop() {

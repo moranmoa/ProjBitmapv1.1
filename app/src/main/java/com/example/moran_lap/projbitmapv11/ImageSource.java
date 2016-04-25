@@ -7,11 +7,13 @@ import android.graphics.Bitmap;
  */
 public abstract class ImageSource {
 
-    private int originalHeight;
-    private int originalWidth;
-    //private ImageReader imageReader;
+    protected String sourceName;
+    protected int originalHeight;
+    protected int originalWidth;
+    //protected ImageReader imageReader;
 
     public ImageSource(){
+        //sourceName=...;
         //originalHeight = ...;
         //originalWidth = ...;
         //imageReader = ...;
@@ -42,4 +44,7 @@ public abstract class ImageSource {
 
     public abstract void SetupSource();//init the source
 
+    public String getSourceName() {
+        return sourceName;
+    }
 }

@@ -8,24 +8,21 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Gili on 08/04/2016.
  */
-public class Composer extends Thread{
+public class Composer extends Thread {
 
     private Spinner mSpinner;
     private Preview mPreview;
     private Bitmap mBitmap;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
     private boolean firstSelectionEvent = true;
-    private String[] SourcesStingsArray;
     private Paint paint;
     private Canvas canvas;
     private Object mObj;
@@ -93,11 +90,19 @@ public class Composer extends Thread{
         mBitmap.eraseColor(Color.RED);
         mPreview = new Preview(mBitmap);
         mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
-        mSurfaceComponents = new ArrayList<SurfaceComponent>();
+        mSurfaceComponents = new ArrayList();
         mObj = new Object();
         paint = mPreview.getPaint();
         canvas = mPreview.getCanvas();
 
+        initSpinner();
+    }
+
+    void onPlusButtonClicked(){
+        mSpinner.setVisibility(View.VISIBLE);
+    }
+
+    private void initSpinner(){
         // Spinner element
         mSpinner = (Spinner) ApplicationContext.getActivity().findViewById(R.id.spinner);
 
@@ -124,13 +129,15 @@ public class Composer extends Thread{
 
         // spinner will not be visible until plus button pressed
         mSpinner.setVisibility(View.GONE);
-
     }
 
-    void onPlusButtonClicked(){
-        mSpinner.setVisibility(View.VISIBLE);
-    }
 
+
+
+
+    public ArrayList<SurfaceComponent> getmSurfaceComponents() {
+        return mSurfaceComponents;
+    }
 
     public void run() {
         try {

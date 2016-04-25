@@ -6,6 +6,11 @@ import android.graphics.Bitmap;
  * Created by Moran-Lap on 23/04/2016.
  */
 public class CameraSource extends ImageSource {
+
+    public CameraSource(){
+        sourceName = "Camera";
+    }
+
     @Override
     public Bitmap getImage() {
         return null;

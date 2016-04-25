@@ -8,6 +8,10 @@ import android.view.View;
  */
 public class ScreenSource extends ImageSource {
 
+    public ScreenSource(){
+        sourceName = "Screen";
+    }
+
     @Override
     public Bitmap getImage() {
         View v1;

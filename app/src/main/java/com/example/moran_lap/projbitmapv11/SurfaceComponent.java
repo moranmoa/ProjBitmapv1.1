@@ -40,6 +40,10 @@ public class SurfaceComponent extends Thread{
 
     public boolean isEnabled() { return isEnabled; }
 
+    public void setIsEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
     public void Enable() { isEnabled = true; }
 
     public void Disable() { isEnabled = false; }
@@ -52,4 +56,7 @@ public class SurfaceComponent extends Thread{
         return mBitmap;
     }
 
+    public String getSurfaceComponentName() {
+        return getImageSource().getSourceName();
+    }
 }
