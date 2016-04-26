@@ -18,16 +18,19 @@ import java.util.List;
  */
 public class Composer extends Thread {
 
+    // Preview members
     private Spinner mSpinner;
     private Preview mPreview;
     private Bitmap mBitmap;
-    private ArrayList<SurfaceComponent> mSurfaceComponents;
-    private boolean firstSelectionEvent = true;
     private Paint paint;
     private Canvas canvas;
-    private Object mObj;
     private ImageView mImageView;
-    private SurfaceComponentAdapter SCadapter;
+
+    // Model members
+    private ArrayList<SurfaceComponent> mSurfaceComponents;
+    private Object mObj;
+    private boolean firstSelectionEvent = true;
+
     class ItemSelectedListener implements AdapterView.OnItemSelectedListener{
 
         @Override
@@ -40,25 +43,24 @@ public class Composer extends Thread {
             }
             // On selecting a spinner item
             String item = parent.getItemAtPosition(position).toString();
-            //String item = parent.getSelectedItem().toString();
-
-            paint.setColor(Color.GREEN);
-
             switch(item){
                 case ("Camera") :
                     mSurfaceComponents.add(new SurfaceComponent(new CameraSource()));
-                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    paint.setColor(Color.GREEN);
+                    canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
                     mImageView.invalidate();
                     //mImageView.refreshDrawableState();
                     break;
                 case ("Image") :
                     mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
-                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    paint.setColor(Color.RED);
+                    canvas.drawRect(40F, 300F, 180F, 400F, paint);
                     mImageView.invalidate();
                     break;
                 case ("Text") :
                     mSurfaceComponents.add(new SurfaceComponent(new TextSource()));
-                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    paint.setColor(Color.YELLOW);
+                    canvas.drawRect(20F, 600F, 180F, 400F, paint);
                     mImageView.invalidate();
                     break;
                 case ("Screen") :
@@ -69,17 +71,14 @@ public class Composer extends Thread {
 //                    synchronized (mObj) {
 //                        mObj.notify();
 //                    }
-                    //canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    paint.setColor(Color.BLUE);
+                    canvas.drawRect(20F, 300F, 200F, 400F, paint);
                     break;
                 default:
                     Toast.makeText(parent.getContext(), "No Item Selected", Toast.LENGTH_LONG).show();
             }
             ((MainActivity)ApplicationContext.getActivity()).onListviewChanged();
             mSpinner.setVisibility(View.GONE);
-
-
-            // Showing selected spinner item
-            // Toast.makeText(parent.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -90,29 +89,26 @@ public class Composer extends Thread {
 
     public Composer(){
 
-        mBitmap = Bitmap.createBitmap(1280, 720,  Bitmap.Config.ARGB_8888);
-        mBitmap.eraseColor(Color.RED);
-        mPreview = new Preview(mBitmap);
-        mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
         mSurfaceComponents = new ArrayList();
         mObj = new Object();
-        paint = mPreview.getPaint();
-        canvas = mPreview.getCanvas();
-
+        initPreview();
         initSpinner();
     }
 
-    void onPlusButtonClicked(){
-        mSpinner.setVisibility(View.VISIBLE);
+    private void initPreview(){
+        mBitmap = Bitmap.createBitmap(1280, 720,  Bitmap.Config.ARGB_8888);
+        mBitmap.eraseColor(Color.BLACK);
+        mPreview = new Preview(mBitmap);
+        paint = mPreview.getPaint();
+        canvas = mPreview.getCanvas();
+        mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
     }
 
     private void initSpinner(){
         // Spinner element
         mSpinner = (Spinner) ApplicationContext.getActivity().findViewById(R.id.spinner);
-
         // Spinner click listener
         mSpinner.setOnItemSelectedListener(new ItemSelectedListener());
-
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
         //categories.add("Select Source");
@@ -121,26 +117,22 @@ public class Composer extends Thread {
         categories.add("Text");
         categories.add("Screen");
         categories.add("Image");
-
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(ApplicationContext.getActivity(), android.R.layout.simple_spinner_item, categories);
-
         // Drop down layout style
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         // attaching data adapter to spinner
         mSpinner.setAdapter(dataAdapter);
-
         // spinner will not be visible until plus button pressed
         mSpinner.setVisibility(View.GONE);
     }
 
-    public ArrayList<SurfaceComponent> getmSurfaceComponents() {
-        return mSurfaceComponents;
+    void onPlusButtonClicked(){
+        mSpinner.setVisibility(View.VISIBLE);
     }
 
-    public void setSCadapter(SurfaceComponentAdapter SCadapter) {
-        this.SCadapter = SCadapter;
+    public ArrayList<SurfaceComponent> getmSurfaceComponents() {
+        return mSurfaceComponents;
     }
 
     public void run() {

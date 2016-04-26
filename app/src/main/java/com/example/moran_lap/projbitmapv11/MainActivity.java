@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +19,6 @@ import dragndroplist.DragNDropListView;
 
 public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
-    //Composer mComposer;
     private Button mStreamButton;
     private Boolean startStream = true;
     private DragNDropListView mListView;
@@ -66,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         });
     }
 
-
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         int pos = mListView.getPositionForView(buttonView);
@@ -88,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         }
 
         SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData);
-        //mListView.setAdapter(SCadapter);
 
         mListView.setOnItemDragNDropListener(new DragNDropListView.OnItemDragNDropListener() {
             @Override
@@ -99,14 +95,12 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
             @Override
             public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
                 SurfaceComponent temp = mSurfaceComponents.get(startPosition);
-
                 if (startPosition < endPosition)
                     for (int i = startPosition; i < endPosition; ++i)
                         mSurfaceComponents.set(i, mSurfaceComponents.get(i + 1));
                 else if (endPosition < startPosition)
                     for (int i = startPosition; i > endPosition; --i)
                         mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
-
                 mSurfaceComponents.set(endPosition, temp);
             }
         });

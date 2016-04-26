@@ -21,8 +21,6 @@ public class Preview {
 
     public Preview(Bitmap bitmap){
 
-        //mBitmap = Bitmap.createBitmap(1400, 1600,  Bitmap.Config.ARGB_8888);
-        //mBitmap.eraseColor(Color.RED);
         mBitmap = bitmap;
         ImageView imageview=(ImageView) ApplicationContext.getActivity().findViewById(R.id.imageView);
         imageview.setImageBitmap(mBitmap);
@@ -33,11 +31,6 @@ public class Preview {
         mPaint.setStrokeWidth(6F);
         mPaint.setColor(Color.BLUE);
         mPaint.setStyle(Paint.Style.STROKE);
-
-        //mCanvas.drawLine(0F, 0F, 500F, 500F, mPaint);
-        //mCanvas.drawText("Hello Graphics", 0, 14, 90, 80, mPaint);
-        //mPaint.setColor(Color.GREEN);
-        //mCanvas.drawRect(20F, 300F, 180F, 400F, mPaint);
     }
 
     public Bitmap getBitmap() {

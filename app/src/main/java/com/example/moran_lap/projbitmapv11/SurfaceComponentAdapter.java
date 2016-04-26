@@ -21,7 +21,6 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
 
     public SurfaceComponentAdapter(List<SurfaceComponent> surfaceComponents,ArrayList<Map<String, String>> mapData){//, Cursor cursor) {
         super(ApplicationContext.getActivity(), mapData,R.layout.single_listview_item, new String[]{"text"},new int[]{R.id.sourcename},R.id.sourcename);
-        //super(ApplicationContext.getActivity(),R.layout.single_listview_item, cursor,new String[]{"text"},new int[]{R.id.sourcename},R.id.sourcename);
         this.surfaceComponents = surfaceComponents;
         context = ApplicationContext.getActivity();
     }
@@ -43,9 +42,6 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
         }
         SurfaceComponent sp = surfaceComponents.get(position);
         holder.SourceName.setText(sp.getSurfaceComponentName());
-        //holder.checkbox.setChecked(sp.isEnabled());
-        //holder.checkbox.setTag(sp);
-        //((MainActivity)ApplicationContext.getActivity()).onListviewChanged();
 
         return v;
     }
