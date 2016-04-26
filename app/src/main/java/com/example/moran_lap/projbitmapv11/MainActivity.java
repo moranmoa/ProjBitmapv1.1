@@ -2,24 +2,26 @@ package com.example.moran_lap.projbitmapv11;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
+import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import dragndroplist.DragNDropListView;
 
 public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
     //Composer mComposer;
     //Button mStreamButton;
-    private ListView mListView;
+    private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
 
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         final Composer mComposer = new Composer();
         mSurfaceComponents = mComposer.getmSurfaceComponents();
         //((Thread)mComposer).start();
-        mListView = (ListView) ApplicationContext.getActivity().findViewById(R.id.listView);
+        mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
         displaySurfaceComponentsList();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -61,20 +63,46 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         }
     }
 
-    private void displaySurfaceComponentsList(){
-        //ImageSource im = new ScreenSource();
-        //ImageSource imim = new CameraSource();
-        //mSurfaceComponents.add(new SurfaceComponent(im));
-        //mSurfaceComponents.add(new SurfaceComponent(imim));
+    private void displaySurfaceComponentsList()
+    {
+        ArrayList<Map<String, String>> mapData = new ArrayList();
 
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents);
-        mListView.setAdapter(SCadapter);
+        for (SurfaceComponent sc : mSurfaceComponents) {
+            HashMap<String, String> map = new HashMap();
+            map.put("sourceName", sc.getSurfaceComponentName());
+            mapData.add(map);
+        }
+
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData);
+        //mListView.setAdapter(SCadapter);
+
+        mListView.setOnItemDragNDropListener(new DragNDropListView.OnItemDragNDropListener() {
+            @Override
+            public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
+
+            }
+
+            @Override
+            public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
+                SurfaceComponent temp = mSurfaceComponents.get(startPosition);
+
+                if (startPosition < endPosition)
+                    for (int i = startPosition; i < endPosition; ++i)
+                        mSurfaceComponents.set(i, mSurfaceComponents.get(i + 1));
+                else if (endPosition < startPosition)
+                    for (int i = startPosition; i > endPosition; --i)
+                        mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
+
+                mSurfaceComponents.set(endPosition, temp);
+            }
+        });
+        mListView.setDragNDropAdapter(SCadapter);
     }
 
-    public static void onListviewChanged(){
+    public void onListviewChanged(){
+        displaySurfaceComponentsList();
         SCadapter.notifyDataSetChanged();
     }
-
 
     @Override
     protected void onStop() {

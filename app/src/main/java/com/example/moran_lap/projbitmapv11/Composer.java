@@ -74,7 +74,7 @@ public class Composer extends Thread {
                 default:
                     Toast.makeText(parent.getContext(), "No Item Selected", Toast.LENGTH_LONG).show();
             }
-            MainActivity.onListviewChanged();
+            ((MainActivity)ApplicationContext.getActivity()).onListviewChanged();
             mSpinner.setVisibility(View.GONE);
 
 
