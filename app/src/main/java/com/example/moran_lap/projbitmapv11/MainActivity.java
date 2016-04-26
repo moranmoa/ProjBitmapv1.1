@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -20,7 +21,8 @@ import dragndroplist.DragNDropListView;
 public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
     //Composer mComposer;
-    //Button mStreamButton;
+    private Button mStreamButton;
+    private Boolean startStream = true;
     private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
@@ -38,6 +40,18 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         //((Thread)mComposer).start();
         mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
         displaySurfaceComponentsList();
+
+        mStreamButton = (Button) findViewById(R.id.streamButton);
+        mStreamButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (startStream)
+                    mStreamButton.setText("Stop Stream");
+                else
+                    mStreamButton.setText("Start Stream");
+                startStream = !startStream;
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
