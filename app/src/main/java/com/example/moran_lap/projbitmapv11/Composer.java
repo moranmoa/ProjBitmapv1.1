@@ -27,7 +27,7 @@ public class Composer extends Thread {
     private Canvas canvas;
     private Object mObj;
     private ImageView mImageView;
-
+    private SurfaceComponentAdapter SCadapter;
     class ItemSelectedListener implements AdapterView.OnItemSelectedListener{
 
         @Override
@@ -45,32 +45,36 @@ public class Composer extends Thread {
             paint.setColor(Color.GREEN);
 
             switch(item){
-                case ("Camera") : //mSurfaceComponents.add(CameraSource);
-                    //SourcesStingsArray[SourcesStingsArray.length] = "Camera";
+                case ("Camera") :
+                    mSurfaceComponents.add(new SurfaceComponent(new CameraSource()));
+                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                    mImageView.invalidate();
+                    //mImageView.refreshDrawableState();
+                    break;
+                case ("Image") :
+                    mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     mImageView.invalidate();
                     break;
-                case ("Text") : //mSurfaceComponents.add(TextSource);
+                case ("Text") :
+                    mSurfaceComponents.add(new SurfaceComponent(new TextSource()));
                     canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     mImageView.invalidate();
                     break;
                 case ("Screen") :
                     SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
-                    screenComponent.Enable();
+                    //screenComponent.Enable();
                     mSurfaceComponents.add(screenComponent);
 
-                    synchronized (mObj) {
-                        mObj.notify();
-                    }
+//                    synchronized (mObj) {
+//                        mObj.notify();
+//                    }
                     //canvas.drawRect(20F, 300F, 180F, 400F, paint);
-                    break;
-                case ("Image") : //mSurfaceComponents.add(PictureSource);
-                    canvas.drawRect(20F, 300F, 180F, 400F, paint);
                     break;
                 default:
                     Toast.makeText(parent.getContext(), "No Item Selected", Toast.LENGTH_LONG).show();
             }
-
+            MainActivity.onListviewChanged();
             mSpinner.setVisibility(View.GONE);
 
 
@@ -131,12 +135,12 @@ public class Composer extends Thread {
         mSpinner.setVisibility(View.GONE);
     }
 
-
-
-
-
     public ArrayList<SurfaceComponent> getmSurfaceComponents() {
         return mSurfaceComponents;
+    }
+
+    public void setSCadapter(SurfaceComponentAdapter SCadapter) {
+        this.SCadapter = SCadapter;
     }
 
     public void run() {

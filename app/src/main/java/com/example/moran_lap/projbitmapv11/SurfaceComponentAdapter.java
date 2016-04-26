@@ -41,8 +41,8 @@ public class SurfaceComponentAdapter extends ArrayAdapter {
         }
         SurfaceComponent sp = surfaceComponents.get(position);
         holder.SourceName.setText(sp.getSurfaceComponentName());
-        holder.checkbox.setChecked(sp.isEnabled());
-        holder.checkbox.setTag(sp);
+        //holder.checkbox.setChecked(sp.isEnabled());
+        //holder.checkbox.setTag(sp);
 
         return v;
     }

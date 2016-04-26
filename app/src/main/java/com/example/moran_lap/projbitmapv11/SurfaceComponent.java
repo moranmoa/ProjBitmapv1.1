@@ -13,11 +13,13 @@ public class SurfaceComponent extends Thread{
     private Position imagePositionOnSurface;
 
     public SurfaceComponent(ImageSource source, Position position){
+        this.isEnabled = true;
         this.imageSource = source;
         this.imagePositionOnSurface = position;
     }
 
     public SurfaceComponent(ImageSource source){
+        this.isEnabled = true;
         this.imageSource = source;
         this.imagePositionOnSurface = new Position();
     }

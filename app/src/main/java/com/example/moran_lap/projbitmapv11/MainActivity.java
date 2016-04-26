@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
     //Composer mComposer;
     //Button mStreamButton;
     private ListView mListView;
-    private SurfaceComponentAdapter SCadapter;
+    private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
 
     @Override
@@ -62,13 +62,17 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
     }
 
     private void displaySurfaceComponentsList(){
-        ImageSource im = new ScreenSource();
-        ImageSource imim = new CameraSource();
-        mSurfaceComponents.add(new SurfaceComponent(im));
-        mSurfaceComponents.add(new SurfaceComponent(imim));
+        //ImageSource im = new ScreenSource();
+        //ImageSource imim = new CameraSource();
+        //mSurfaceComponents.add(new SurfaceComponent(im));
+        //mSurfaceComponents.add(new SurfaceComponent(imim));
 
         SCadapter = new SurfaceComponentAdapter(mSurfaceComponents);
         mListView.setAdapter(SCadapter);
+    }
+
+    public static void onListviewChanged(){
+        SCadapter.notifyDataSetChanged();
     }
 
 
