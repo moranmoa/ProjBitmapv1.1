@@ -1,5 +1,6 @@
 package com.example.moran_lap.projbitmapv11;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
     private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,13 +54,66 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
             }
         });
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                //Creating the instance of PopupMenu
+                PopupMenu popup = new PopupMenu(MainActivity.this, fab);
+                //Inflating the Popup using xml file
+                popup.getMenuInflater().inflate(R.menu.plus_popup_menu, popup.getMenu());
+
+                //registering popup with OnMenuItemClickListener
+                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                        //Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
+                        // On selecting a spinner item
+
+                        switch(item.getItemId()){
+                            case (R.id.camera_source) :
+                                mSurfaceComponents.add(new SurfaceComponent(new CameraSource()));
+//                                paint.setColor(Color.GREEN);
+//                                canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
+//                                mImageView.invalidate();
+                                //mImageView.refreshDrawableState();
+                                break;
+                            case (R.id.image_source) :
+                                mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
+//                                paint.setColor(Color.RED);
+//                                canvas.drawRect(40F, 300F, 180F, 400F, paint);
+//                                mImageView.invalidate();
+                                break;
+                            case (R.id.text_source) :
+                                mSurfaceComponents.add(new SurfaceComponent(new TextSource()));
+//                                paint.setColor(Color.YELLOW);
+//                                canvas.drawRect(20F, 600F, 180F, 400F, paint);
+//                                mImageView.invalidate();
+                                break;
+                            case (R.id.screen_source) :
+                                SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
+                                //screenComponent.Enable();
+                                mSurfaceComponents.add(screenComponent);
+
+            //                  synchronized (mObj) {
+            //                      mObj.notify();
+            //                  }
+//                                paint.setColor(Color.BLUE);
+//                                canvas.drawRect(20F, 300F, 200F, 400F, paint);
+//                                mImageView.invalidate();
+                                break;
+//                            default:
+//                                Toast.makeText(parent.getContext(), "No Item Selected", Toast.LENGTH_LONG).show();
+                        }
+                        ((MainActivity)ApplicationContext.getActivity()).onListviewChanged();
+
+                        return true;
+                    }
+                });
+
+                popup.show();//showing popup menu
                 //Add new ImageSource
-                mComposer.onPlusButtonClicked();
+                //mComposer.onPlusButtonClicked();
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                        .setAction("Action", null).show();
             }
