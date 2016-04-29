@@ -66,13 +66,12 @@ public class Composer extends Thread {
             if (mSurfaceComponents != null) {
                 for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
                     if (surfaceComponent.isEnabled()) {
-                        ((Thread) surfaceComponent).start();
+                        surfaceComponent.start();
                     }
                 }
-
                 for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
                     try {
-                        ((Thread) surfaceComponent).join();
+                        surfaceComponent.join();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

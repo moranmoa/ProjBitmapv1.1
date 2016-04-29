@@ -1,9 +1,14 @@
 package com.example.moran_lap.projbitmapv11;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +16,6 @@ import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,10 +25,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -111,15 +114,17 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 // Add PictureSource
                                 mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
                                 loadImageFromGallery();
+
                                 // create new Bitmap
                                 //ImageBitmap = Bitmap.createBitmap(mComposer.getBitmap(),0,0,600,300);
                                 //mImageView.invalidate();
+                                //mImageView.refreshDrawableState();
                                 break;
                             case (R.id.text_source) :
-                                mSurfaceComponents.add(new SurfaceComponent(new TextSource()));
-                                //paint.setColor(Color.YELLOW);
-                                //canvas.drawRect(20F, 600F, 180F, 400F, paint);
-                                //mImageView.invalidate();
+                                Position pos = new Position(20, 300, 180, 400);
+                                ImageSource textSource = new TextSource();
+                                mSurfaceComponents.add(new SurfaceComponent(textSource,pos));
+                                drawTextToBitmap(mComposer.getBitmap(),"Test Text Source",pos);
                                 break;
                             case (R.id.screen_source) :
                                 SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
@@ -140,6 +145,29 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 popup.show();//showing popup menu
             }
         });
+    }
+
+    public void drawTextToBitmap(Bitmap originalBitmap, String text, Position position){
+        Resources resources = ApplicationContext.getActivity().getResources();
+        float scale = resources.getDisplayMetrics().density;
+        Canvas canvas = new Canvas(originalBitmap);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.WHITE); // Text Color
+        paint.setStrokeWidth(12); // Text Size
+
+        paint.setTextSize((int) (14 * scale));
+        // text shadow
+        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
+
+        // draw text to the Canvas center
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        //int x = (originalBitmap.getWidth() - bounds.width())/2;
+        //int y = (originalBitmap.getHeight() + bounds.height())/2;
+
+        canvas.drawText(text, position.getxStart(), position.getyStart(), paint);
+        //canvas.drawRect(position.getxStart(),position.getyStart(),position.getxEnd(),position.getyEnd(),paint);
     }
 
     public void loadImageFromGallery() {
@@ -167,14 +195,25 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 
                 imgDecodableString = cursor.getString(columnIndex);
-                //mImageView.setTag(loadtarget);
                 cursor.close();
+
+                File image = new File(imgDecodableString);
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                Bitmap imageBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
+
+                imageBitmap = Bitmap.createScaledBitmap(imageBitmap,100,100,true);
+                Bitmap originalBitmap = mComposer.getBitmap();
+                Canvas canvas = new Canvas(originalBitmap);
+
+                canvas.drawBitmap(imageBitmap, 0, 0, null);
+
+                mImageView.setImageBitmap(originalBitmap);
 
                 //loadBitmap(imgDecodableString);
                 // Set the Image in ImageView after decoding the String
-                mImageView.setImageBitmap(BitmapFactory
-                        .decodeFile(imgDecodableString));
-                //Picasso.with(this).load(imgDecodableString).resize(300,400).centerCrop().into(mImageView);
+                //mImageView.setImageBitmap(BitmapFactory
+                //        .decodeFile(imgDecodableString));
+
 
             } else {
                 Toast.makeText(this, "You haven't picked Image",
@@ -239,9 +278,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                         mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
                 mSurfaceComponents.set(endPosition, temp);
             }
-        });
-        // consider removing refreshSurfaceComponentsList call if mSurfaceComponents is empty on initialization
-        //refreshSurfaceComponentsList();
+        });;
     }
 
     private void refreshSurfaceComponentsList() {
@@ -323,3 +360,4 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
 //.into(mImageView);
 //paint.setColor(Color.RED);
 //canvas.drawRect(40F, 300F, 180F, 400F, paint);
+//Picasso.with(this).load(imgDecodableString).resize(300,400).centerCrop().into(mImageView);
