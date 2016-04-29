@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
                                 loadImageFromGallery();
                                 // create new Bitmap
-                                ImageBitmap = Bitmap.createBitmap(mComposer.getBitmap(),0,0,600,300);
+                                //ImageBitmap = Bitmap.createBitmap(mComposer.getBitmap(),0,0,600,300);
                                 //mImageView.invalidate();
                                 break;
                             case (R.id.text_source) :
@@ -241,10 +241,11 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
             }
         });
         // consider removing refreshSurfaceComponentsList call if mSurfaceComponents is empty on initialization
-        refreshSurfaceComponentsList();
+        //refreshSurfaceComponentsList();
     }
 
     private void refreshSurfaceComponentsList() {
+        mapData.clear();
         for (SurfaceComponent sc : mSurfaceComponents) {
             HashMap<String, String> map = new HashMap();
             map.put("sourceName", sc.getSurfaceComponentName());
@@ -255,8 +256,8 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
     }
 
     public void onListViewChanged(){
-        SCadapter.notifyDataSetChanged();
         refreshSurfaceComponentsList();
+        SCadapter.notifyDataSetChanged();
     }
 
     @Override

@@ -42,7 +42,6 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
         }
         SurfaceComponent sp = surfaceComponents.get(position);
         holder.SourceName.setText(sp.getSurfaceComponentName());
-
         return v;
     }
 
