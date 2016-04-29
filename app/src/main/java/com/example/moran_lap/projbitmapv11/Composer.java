@@ -19,10 +19,10 @@ import java.util.List;
 public class Composer extends Thread {
 
     // Preview members
-    private Preview mPreview;
+    //private Preview mPreview;
     private Bitmap mBitmap;
-    private Paint paint;
-    private Canvas canvas;
+    //private Paint paint;
+    //private Canvas canvas;
     private ImageView mImageView;
 
     // Model members
@@ -37,17 +37,21 @@ public class Composer extends Thread {
     }
 
     private void initPreview(){
-        mBitmap = Bitmap.createBitmap(1280, 720,  Bitmap.Config.ARGB_8888);
+        mBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.BLACK);
-        mPreview = new Preview(mBitmap);
-        paint = mPreview.getPaint();
-        canvas = mPreview.getCanvas();
+        //mPreview = new Preview(mBitmap);
+        //paint = mPreview.getPaint();
+        //canvas = mPreview.getCanvas();
         mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
+        mImageView.setImageBitmap(mBitmap);
     }
-
 
     public ArrayList<SurfaceComponent> getmSurfaceComponents() {
         return mSurfaceComponents;
+    }
+
+    public Bitmap getBitmap() {
+        return mBitmap;
     }
 
     public void run() {
@@ -85,8 +89,8 @@ public class Composer extends Thread {
             */
                 for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
                     if (surfaceComponent.isEnabled()) {
-                        paint.setColor(Color.GREEN);
-                        canvas.drawRect(20F, 300F, 180F, 400F, paint);
+                       // paint.setColor(Color.GREEN);
+                       // canvas.drawRect(20F, 300F, 180F, 400F, paint);
                         //mBitmap=surfaceComponent.getBitmap();
                     }
                 }

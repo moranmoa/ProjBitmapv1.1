@@ -1,18 +1,30 @@
 package com.example.moran_lap.projbitmapv11;
 
-import android.graphics.Color;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,12 +33,25 @@ import dragndroplist.DragNDropListView;
 
 public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
-    private Button mStreamButton;
-    private Boolean startStream = true;
+    // ImageView - Preview
+    private ImageView mImageView;
+    private static int RESULT_LOAD_IMG = 1;
+    String imgDecodableString;
+
+    // (DragNDrop)ListView - SurfaceComponents with checkboxes
     private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
+    private ArrayList<Map<String, String>> mapData;
+
+    // Buttons - StreamButton and plus button to add SurfaceComponents
+    private Button mStreamButton;
+    private Boolean startStream = true;
     private FloatingActionButton fab;
+
+    private Composer mComposer;
+    private Target loadtarget;
+    private Bitmap ImageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +60,19 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        // set MainActivity to be the global context of this application
         ApplicationContext.setActivity(this);
-        final Composer mComposer = new Composer();
+
+        // Initialize View components
+        mImageView = (ImageView)findViewById(R.id.imageView);
+
+        //final Composer mComposer = new Composer();
+        mComposer = new Composer();
         mSurfaceComponents = mComposer.getmSurfaceComponents();
+        // Start Composer Thread to work - consider activate on first addition of SurfaceComponent or wait and signal
         //((Thread)mComposer).start();
         mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
-        displaySurfaceComponentsList();
+        InitializeListView();
 
         mStreamButton = (Button) findViewById(R.id.streamButton);
         mStreamButton.setOnClickListener(new View.OnClickListener() {
@@ -67,57 +99,114 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 //registering popup with OnMenuItemClickListener
                 popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
-                        //Toast.makeText(MainActivity.this,"You Clicked : " + item.getTitle(),Toast.LENGTH_SHORT).show();
-                        // On selecting a spinner item
-
                         switch(item.getItemId()){
                             case (R.id.camera_source) :
                                 mSurfaceComponents.add(new SurfaceComponent(new CameraSource()));
-//                                paint.setColor(Color.GREEN);
-//                                canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
-//                                mImageView.invalidate();
+                                //paint.setColor(Color.GREEN);
+                                //canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
+                                //mImageView.invalidate();
                                 //mImageView.refreshDrawableState();
                                 break;
                             case (R.id.image_source) :
+                                // Add PictureSource
                                 mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
-//                                paint.setColor(Color.RED);
-//                                canvas.drawRect(40F, 300F, 180F, 400F, paint);
-//                                mImageView.invalidate();
+                                loadImageFromGallery();
+                                // create new Bitmap
+                                ImageBitmap = Bitmap.createBitmap(mComposer.getBitmap(),0,0,600,300);
+                                //mImageView.invalidate();
                                 break;
                             case (R.id.text_source) :
                                 mSurfaceComponents.add(new SurfaceComponent(new TextSource()));
-//                                paint.setColor(Color.YELLOW);
-//                                canvas.drawRect(20F, 600F, 180F, 400F, paint);
-//                                mImageView.invalidate();
+                                //paint.setColor(Color.YELLOW);
+                                //canvas.drawRect(20F, 600F, 180F, 400F, paint);
+                                //mImageView.invalidate();
                                 break;
                             case (R.id.screen_source) :
                                 SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
                                 //screenComponent.Enable();
                                 mSurfaceComponents.add(screenComponent);
-
-            //                  synchronized (mObj) {
-            //                      mObj.notify();
-            //                  }
-//                                paint.setColor(Color.BLUE);
-//                                canvas.drawRect(20F, 300F, 200F, 400F, paint);
-//                                mImageView.invalidate();
+                                //synchronized (mObj) {
+                                //    mObj.notify();
+                                //}
+                                //paint.setColor(Color.BLUE);
+                                //canvas.drawRect(20F, 300F, 200F, 400F, paint);
+                                //mImageView.invalidate();
                                 break;
-//                            default:
-//                                Toast.makeText(parent.getContext(), "No Item Selected", Toast.LENGTH_LONG).show();
                         }
-                        ((MainActivity)ApplicationContext.getActivity()).onListviewChanged();
-
+                        ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
                         return true;
                     }
                 });
-
                 popup.show();//showing popup menu
-                //Add new ImageSource
-                //mComposer.onPlusButtonClicked();
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
             }
         });
+    }
+
+    public void loadImageFromGallery() {
+        // Create intent to Open Image applications like Gallery, Google Photos
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK,
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        // Start the Intent
+        startActivityForResult(galleryIntent, RESULT_LOAD_IMG);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            // When an Image is picked
+            if (requestCode == RESULT_LOAD_IMG && resultCode == RESULT_OK
+                    && null != data) {
+                // Get the Image from data
+                Uri selectedImage = data.getData();
+                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+                // Get the cursor
+                Cursor cursor = getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                cursor.moveToFirst(); // Move to first row
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+                imgDecodableString = cursor.getString(columnIndex);
+                //mImageView.setTag(loadtarget);
+                cursor.close();
+
+                //loadBitmap(imgDecodableString);
+                // Set the Image in ImageView after decoding the String
+                mImageView.setImageBitmap(BitmapFactory
+                        .decodeFile(imgDecodableString));
+                //Picasso.with(this).load(imgDecodableString).resize(300,400).centerCrop().into(mImageView);
+
+            } else {
+                Toast.makeText(this, "You haven't picked Image",
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG)
+                    .show();
+        }
+    }
+
+    public void loadBitmap(String url) {
+
+        mImageView.setTag(loadtarget);
+
+        if (loadtarget == null) loadtarget = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                mImageView.setImageBitmap(bitmap);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+            }
+        };
+        Picasso.with(this).load(url).into(loadtarget);
     }
 
     @Override
@@ -130,18 +219,9 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         }
     }
 
-    private void displaySurfaceComponentsList()
-    {
-        ArrayList<Map<String, String>> mapData = new ArrayList();
+    private void InitializeListView(){
 
-        for (SurfaceComponent sc : mSurfaceComponents) {
-            HashMap<String, String> map = new HashMap();
-            map.put("sourceName", sc.getSurfaceComponentName());
-            mapData.add(map);
-        }
-
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData);
-
+        mapData = new ArrayList();
         mListView.setOnItemDragNDropListener(new DragNDropListView.OnItemDragNDropListener() {
             @Override
             public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
@@ -160,12 +240,23 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 mSurfaceComponents.set(endPosition, temp);
             }
         });
+        // consider removing refreshSurfaceComponentsList call if mSurfaceComponents is empty on initialization
+        refreshSurfaceComponentsList();
+    }
+
+    private void refreshSurfaceComponentsList() {
+        for (SurfaceComponent sc : mSurfaceComponents) {
+            HashMap<String, String> map = new HashMap();
+            map.put("sourceName", sc.getSurfaceComponentName());
+            mapData.add(map);
+        }
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData);
         mListView.setDragNDropAdapter(SCadapter);
     }
 
-    public void onListviewChanged(){
-        displaySurfaceComponentsList();
+    public void onListViewChanged(){
         SCadapter.notifyDataSetChanged();
+        refreshSurfaceComponentsList();
     }
 
     @Override
@@ -220,3 +311,14 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         return super.onOptionsItemSelected(item);
     }
 }
+//Picasso.with(ApplicationContext.getActivity())
+//        .load("https://cms-assets.tutsplus.com/uploads/users/21/posts/19431/featured_image/CodeFeature.jpg")
+//        .into(mImageView);
+//Uri uri = Uri.parse("http://androidbook.blogspot.com/");
+//Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
+//startActivity(launchBrowser);
+//Picasso.with(ApplicationContext.getActivity())
+//.load(uri)
+//.into(mImageView);
+//paint.setColor(Color.RED);
+//canvas.drawRect(40F, 300F, 180F, 400F, paint);

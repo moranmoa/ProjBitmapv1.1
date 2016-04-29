@@ -95,7 +95,6 @@ public class DragNDropSimpleAdapter extends SimpleAdapter implements DragNDropAd
 				mPosition[i] = mPosition[i - 1];
 
 		mPosition[endPosition] = position;
-		//((MainActivity) ApplicationContext.getActivity()).onListviewChanged();
 	}
 
 	@Override

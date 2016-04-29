@@ -24,13 +24,10 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Adapter;
 import android.widget.WrapperListAdapter;
-
-import com.example.moran_lap.projbitmapv11.ApplicationContext;
-import com.example.moran_lap.projbitmapv11.MainActivity;
 
 
 public class DragNDropListView extends ListView {

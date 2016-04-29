@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class Preview {
 
     private Bitmap mBitmap;
-    private Paint mPaint;
-    private Canvas mCanvas;
+    //private Paint mPaint;
+    //private Canvas mCanvas;
     private ArrayList<SurfaceComponent> surfaceComponents;
 
     public Preview(Bitmap bitmap){
@@ -24,13 +24,12 @@ public class Preview {
         mBitmap = bitmap;
         ImageView imageview=(ImageView) ApplicationContext.getActivity().findViewById(R.id.imageView);
         imageview.setImageBitmap(mBitmap);
-        mCanvas = new Canvas(mBitmap);
-
-        mPaint = new Paint();
-        mPaint.setAntiAlias(true);
-        mPaint.setStrokeWidth(6F);
-        mPaint.setColor(Color.BLUE);
-        mPaint.setStyle(Paint.Style.STROKE);
+        //mCanvas = new Canvas(mBitmap);
+        //mPaint = new Paint();
+        //mPaint.setAntiAlias(true);
+        //mPaint.setStrokeWidth(6F);
+        //mPaint.setColor(Color.BLUE);
+        //mPaint.setStyle(Paint.Style.STROKE);
     }
 
     public Bitmap getBitmap() {
@@ -41,19 +40,19 @@ public class Preview {
         this.mBitmap = mBitmap;
     }
 
-    public Paint getPaint() {
-        return mPaint;
-    }
+    //public Paint getPaint() {
+    //    return mPaint;
+    //}
 
-    public void setPaint(Paint mPaint) {
-        this.mPaint = mPaint;
-    }
+    //public void setPaint(Paint mPaint) {
+    //    this.mPaint = mPaint;
+    //}
 
     public ArrayList<SurfaceComponent> getSurfaceComponents() {
         return surfaceComponents;
     }
 
-    public Canvas getCanvas() {
-        return mCanvas;
-    }
+    //public Canvas getCanvas() {
+    //    return mCanvas;
+    //}
 }
