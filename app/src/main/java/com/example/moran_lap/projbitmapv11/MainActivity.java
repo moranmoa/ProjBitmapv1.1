@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
     private ImageView mImageView;
     private static int RESULT_LOAD_IMG = 1;
     String imgDecodableString;
+    private StreamSettings mStreamSettings;
 
     // (DragNDrop)ListView - SurfaceComponents with checkboxes
     private DragNDropListView mListView;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
 
     // Buttons - StreamButton and plus button to add SurfaceComponents
     private Button mStreamButton;
-    private Boolean startStream = true;
+    private Boolean startStream = false;
     private FloatingActionButton fab;
 
     private Composer mComposer;
@@ -76,15 +77,15 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         //((Thread)mComposer).start();
         mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
         InitializeListView();
-
+        mStreamSettings= new StreamSettings();//difult settongs
         mStreamButton = (Button) findViewById(R.id.streamButton);
         mStreamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (startStream)
-                    mStreamButton.setText("Stop Stream");
-                else
+                if (startStream)//turn off
                     mStreamButton.setText("Start Stream");
+                else//turn on
+                    mStreamButton.setText("Stop Stream");
                 startStream = !startStream;
             }
         });
