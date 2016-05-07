@@ -18,14 +18,8 @@ import java.util.List;
  */
 public class Composer extends Thread {
 
-    // Preview members
-    //private Preview mPreview;
     private Bitmap mBitmap;
-    //private Paint paint;
-    //private Canvas canvas;
     private ImageView mImageView;
-
-    // Model members
     private ArrayList<SurfaceComponent> mSurfaceComponents;
     private Object mObj;
 
@@ -37,13 +31,20 @@ public class Composer extends Thread {
     }
 
     private void initPreview(){
+        mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
+        initBitmap();
+
+    }
+
+    void initBitmap(){
         mBitmap = Bitmap.createBitmap(1280, 720, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.BLACK);
-        //mPreview = new Preview(mBitmap);
-        //paint = mPreview.getPaint();
-        //canvas = mPreview.getCanvas();
-        mImageView = (ImageView)ApplicationContext.getActivity().findViewById(R.id.imageView);
         mImageView.setImageBitmap(mBitmap);
+        mImageView.invalidate();
+    }
+
+    public ImageView getImageView() {
+        return mImageView;
     }
 
     public ArrayList<SurfaceComponent> getmSurfaceComponents() {

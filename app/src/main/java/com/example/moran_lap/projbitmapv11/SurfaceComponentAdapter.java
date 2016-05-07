@@ -1,14 +1,19 @@
 package com.example.moran_lap.projbitmapv11;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import dragndroplist.DragNDropListView;
 import dragndroplist.DragNDropSimpleAdapter;
 
 /**
@@ -16,13 +21,15 @@ import dragndroplist.DragNDropSimpleAdapter;
  */
 public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
 
-    List<SurfaceComponent> surfaceComponents;
-    Context context;
+    private List<SurfaceComponent> surfaceComponents;
+    private Context context;
+    private Composer composer;
 
-    public SurfaceComponentAdapter(List<SurfaceComponent> surfaceComponents,ArrayList<Map<String, String>> mapData){//, Cursor cursor) {
+    public SurfaceComponentAdapter(List<SurfaceComponent> surfaceComponents,ArrayList<Map<String, String>> mapData, Composer comp){
         super(ApplicationContext.getActivity(), mapData,R.layout.single_listview_item, new String[]{"text"},new int[]{R.id.sourcename},R.id.sourcename);
         this.surfaceComponents = surfaceComponents;
         context = ApplicationContext.getActivity();
+        composer = comp;
     }
 
     @Override
@@ -34,7 +41,19 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
             v = inflater.inflate(R.layout.single_listview_item,null);
             holder.SourceName = (TextView) v.findViewById(R.id.sourcename);
             holder.checkbox = (CheckBox) v.findViewById(R.id.checkbox);
-            holder.checkbox.setOnCheckedChangeListener((MainActivity) context);
+            holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    DragNDropListView listView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
+                    int pos = listView.getPositionForView(buttonView);
+                    if (pos != ListView.INVALID_POSITION) {
+                        SurfaceComponent sp = surfaceComponents.get(pos);
+                        sp.setIsEnabled(isChecked);
+                        Toast.makeText(ApplicationContext.getActivity(), "Clicked on Source " + sp.getImageSource().getSourceName() + " State is: " + sp.isEnabled(), Toast.LENGTH_SHORT).show();
+                        refreshSurfaceComponentsOnBitmap();
+                    }
+                }
+            });
             v.setTag(holder);
         }
         else{
@@ -49,4 +68,18 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
         public TextView SourceName;
         public CheckBox checkbox;
     }
+
+    public void refreshSurfaceComponentsOnBitmap(){
+        composer.initBitmap();
+        notifyDataSetChanged();
+        for (SurfaceComponent sc : surfaceComponents){
+            if (sc.isEnabled()){
+                Bitmap tempBitmap = sc.DrawSurfaceComponentOnBitmap();
+                composer.getImageView().setImageBitmap(tempBitmap);
+                composer.getImageView().invalidate();
+            }
+        }
+        notifyDataSetChanged();
+    }
+
 }

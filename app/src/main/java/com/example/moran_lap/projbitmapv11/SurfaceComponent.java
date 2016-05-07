@@ -9,7 +9,6 @@ public class SurfaceComponent extends Thread{
 
     private boolean isEnabled;
     private ImageSource imageSource;
-    private Bitmap mBitmap;
     private Position imagePositionOnSurface;
 
     public SurfaceComponent(ImageSource source, Position position){
@@ -46,19 +45,15 @@ public class SurfaceComponent extends Thread{
         this.isEnabled = isEnabled;
     }
 
-    public void Enable() { isEnabled = true; }
-
-    public void Disable() { isEnabled = false; }
-
     public void Run() {
-        mBitmap = imageSource.getImage();
-    }
-
-    public Bitmap getBitmap() {
-        return mBitmap;
+        DrawSurfaceComponentOnBitmap();
     }
 
     public String getSurfaceComponentName() {
         return getImageSource().getSourceName();
+    }
+
+    public Bitmap DrawSurfaceComponentOnBitmap() {
+        return imageSource.getImage();
     }
 }

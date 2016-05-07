@@ -36,13 +36,14 @@ import dragndroplist.DragNDropListView;
 
 public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
 
+    private Composer mComposer;
+
     // ImageView - Preview
     private ImageView mImageView;
     private static int RESULT_LOAD_IMG = 1;
-    String imgDecodableString;
-    private StreamSettings mStreamSettings;
+    private String imgDecodableString;
 
-    // (DragNDrop)ListView - SurfaceComponents with checkboxes
+    // DragNDropListView - SurfaceComponents with checkboxes
     private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
@@ -50,12 +51,8 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
 
     // Buttons - StreamButton and plus button to add SurfaceComponents
     private Button mStreamButton;
-    private Boolean startStream = false;
+    private Boolean startStream = true;
     private FloatingActionButton fab;
-
-    private Composer mComposer;
-    private Target loadtarget;
-    private Bitmap ImageBitmap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,15 +74,15 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         //((Thread)mComposer).start();
         mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
         InitializeListView();
-        mStreamSettings= new StreamSettings();//difult settongs
+
         mStreamButton = (Button) findViewById(R.id.streamButton);
         mStreamButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (startStream)//turn off
-                    mStreamButton.setText("Start Stream");
-                else//turn on
+                if (startStream)
                     mStreamButton.setText("Stop Stream");
+                else
+                    mStreamButton.setText("Start Stream");
                 startStream = !startStream;
             }
         });
@@ -123,9 +120,8 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 break;
                             case (R.id.text_source) :
                                 Position pos = new Position(20, 300, 180, 400);
-                                ImageSource textSource = new TextSource();
+                                ImageSource textSource = new TextSource("Test Text Source",mComposer.getBitmap(),pos);
                                 mSurfaceComponents.add(new SurfaceComponent(textSource,pos));
-                                drawTextToBitmap(mComposer.getBitmap(),"Test Text Source",pos);
                                 break;
                             case (R.id.screen_source) :
                                 SurfaceComponent screenComponent = new SurfaceComponent(new ScreenSource(),new Position());
@@ -146,29 +142,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 popup.show();//showing popup menu
             }
         });
-    }
-
-    public void drawTextToBitmap(Bitmap originalBitmap, String text, Position position){
-        Resources resources = ApplicationContext.getActivity().getResources();
-        float scale = resources.getDisplayMetrics().density;
-        Canvas canvas = new Canvas(originalBitmap);
-
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE); // Text Color
-        paint.setStrokeWidth(12); // Text Size
-
-        paint.setTextSize((int) (14 * scale));
-        // text shadow
-        paint.setShadowLayer(1f, 0f, 1f, Color.WHITE);
-
-        // draw text to the Canvas center
-        Rect bounds = new Rect();
-        paint.getTextBounds(text, 0, text.length(), bounds);
-        //int x = (originalBitmap.getWidth() - bounds.width())/2;
-        //int y = (originalBitmap.getHeight() + bounds.height())/2;
-
-        canvas.drawText(text, position.getxStart(), position.getyStart(), paint);
-        //canvas.drawRect(position.getxStart(),position.getyStart(),position.getxEnd(),position.getyEnd(),paint);
     }
 
     public void loadImageFromGallery() {
@@ -210,12 +183,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
 
                 mImageView.setImageBitmap(originalBitmap);
 
-                //loadBitmap(imgDecodableString);
-                // Set the Image in ImageView after decoding the String
-                //mImageView.setImageBitmap(BitmapFactory
-                //        .decodeFile(imgDecodableString));
-
-
             } else {
                 Toast.makeText(this, "You haven't picked Image",
                         Toast.LENGTH_LONG).show();
@@ -224,29 +191,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG)
                     .show();
         }
-    }
-
-    public void loadBitmap(String url) {
-
-        mImageView.setTag(loadtarget);
-
-        if (loadtarget == null) loadtarget = new Target() {
-            @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                mImageView.setImageBitmap(bitmap);
-            }
-
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-
-            }
-        };
-        Picasso.with(this).load(url).into(loadtarget);
     }
 
     @Override
@@ -289,13 +233,13 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
             map.put("sourceName", sc.getSurfaceComponentName());
             mapData.add(map);
         }
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData);
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,mComposer);
         mListView.setDragNDropAdapter(SCadapter);
     }
 
     public void onListViewChanged(){
         refreshSurfaceComponentsList();
-        SCadapter.notifyDataSetChanged();
+        SCadapter.refreshSurfaceComponentsOnBitmap();
     }
 
     @Override
@@ -350,15 +294,3 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         return super.onOptionsItemSelected(item);
     }
 }
-//Picasso.with(ApplicationContext.getActivity())
-//        .load("https://cms-assets.tutsplus.com/uploads/users/21/posts/19431/featured_image/CodeFeature.jpg")
-//        .into(mImageView);
-//Uri uri = Uri.parse("http://androidbook.blogspot.com/");
-//Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uri);
-//startActivity(launchBrowser);
-//Picasso.with(ApplicationContext.getActivity())
-//.load(uri)
-//.into(mImageView);
-//paint.setColor(Color.RED);
-//canvas.drawRect(40F, 300F, 180F, 400F, paint);
-//Picasso.with(this).load(imgDecodableString).resize(300,400).centerCrop().into(mImageView);
