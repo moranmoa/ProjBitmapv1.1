@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 break;
                             case (R.id.image_source) :
                                 // Add PictureSource
-                                mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
+                                //mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
                                 loadImageFromGallery();
 
                                 // create new Bitmap
@@ -119,8 +119,9 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 //mImageView.refreshDrawableState();
                                 break;
                             case (R.id.text_source) :
-                                Position pos = new Position(20, 300, 180, 400);
-                                ImageSource textSource = new TextSource("Test Text Source",mComposer.getBitmap(),pos);
+                                String text = "Test Text Source";
+                                Position pos = new Position(20, 500, 180, 400);
+                                ImageSource textSource = new TextSource(text,pos);
                                 mSurfaceComponents.add(new SurfaceComponent(textSource,pos));
                                 break;
                             case (R.id.screen_source) :
@@ -175,14 +176,16 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 Bitmap imageBitmap = BitmapFactory.decodeFile(image.getAbsolutePath(), bmOptions);
 
-                imageBitmap = Bitmap.createScaledBitmap(imageBitmap,100,100,true);
-                Bitmap originalBitmap = mComposer.getBitmap();
-                Canvas canvas = new Canvas(originalBitmap);
-
-                canvas.drawBitmap(imageBitmap, 0, 0, null);
-
-                mImageView.setImageBitmap(originalBitmap);
-
+                PictureSource pictureSource = new PictureSource();
+                //set the original source bitmap with imageBitmap
+                pictureSource.setOriginalSourceBitmap(imageBitmap);
+                Position pos = new Position(0,100,0,100);
+                SurfaceComponent pictureComponent = new SurfaceComponent(pictureSource,pos);
+                mSurfaceComponents.add(pictureComponent);
+                imageBitmap = Bitmap.createScaledBitmap(imageBitmap,pos.getWidth(),pos.getHeight(),true);
+                //set the surface component bitmap with imageBitmap
+                pictureComponent.setSurfaceComponentBitmap(imageBitmap);
+                ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
             } else {
                 Toast.makeText(this, "You haven't picked Image",
                         Toast.LENGTH_LONG).show();
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                         mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
                 mSurfaceComponents.set(endPosition, temp);
             }
-        });;
+        });
     }
 
     private void refreshSurfaceComponentsList() {

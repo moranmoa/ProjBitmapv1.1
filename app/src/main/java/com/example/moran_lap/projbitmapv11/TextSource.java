@@ -17,11 +17,11 @@ public class TextSource extends ImageSource {
     private Bitmap bitmap;
     private Position position;
 
-    public TextSource(String text, Bitmap originalBitmap, Position pos){
+    public TextSource(String text, Position pos){
         sourceName = "Text";
         this.text = text;
-        bitmap = originalBitmap;
         position = pos;
+        bitmap = Bitmap.createBitmap(position.getWidth(),position.getHeight(), Bitmap.Config.ARGB_8888);
     }
 
     @Override
