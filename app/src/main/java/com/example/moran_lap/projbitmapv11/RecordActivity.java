@@ -152,7 +152,7 @@ public class RecordActivity extends Activity implements OnClickListener {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        setContentView(R.layout.main);
+        setContentView(R.layout.activity_main);
 
         initLayout();
     }
@@ -186,12 +186,12 @@ public class RecordActivity extends Activity implements OnClickListener {
         myInflate = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout topLayout = new RelativeLayout(this);
         setContentView(topLayout);
-        LinearLayout preViewLayout = (LinearLayout) myInflate.inflate(R.layout.main, null);
+        LinearLayout preViewLayout = (LinearLayout) myInflate.inflate(R.layout.activity_main, null);
         layoutParam = new RelativeLayout.LayoutParams(screenWidth, screenHeight);
         topLayout.addView(preViewLayout, layoutParam);
 
         /* add control button: start and stop */
-        btnRecorderControl = (Button) findViewById(R.id.recorder_control);
+        btnRecorderControl = (Button) findViewById(R.id.streamButton);
         btnRecorderControl.setText("Start");
         btnRecorderControl.setOnClickListener(this);
 
