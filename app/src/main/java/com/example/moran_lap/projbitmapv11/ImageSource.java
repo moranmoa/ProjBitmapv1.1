@@ -8,31 +8,24 @@ import android.graphics.Bitmap;
 public abstract class ImageSource {
 
     protected String sourceName;
-    protected int originalHeight;
-    protected int originalWidth;
+    protected Bitmap originalSourceBitmap;
+
     //protected ImageReader imageReader;
 
     public ImageSource(){
-        //sourceName=...;
-        //originalHeight = ...;
-        //originalWidth = ...;
         //imageReader = ...;
     }
 
-    public int getOriginalHeight() {
-        return originalHeight;
+    public Bitmap getOriginalSourceBitmap() {
+        return originalSourceBitmap;
     }
 
-    public void setOriginalHeight(int originalHeight) {
-        this.originalHeight = originalHeight;
+    public void setOriginalSourceBitmap(Bitmap originalSourceBitmap) {
+        this.originalSourceBitmap = originalSourceBitmap;
     }
 
-    public int getOriginalWidth() {
-        return originalWidth;
-    }
-
-    public void setOriginalWidth(int originalWidth) {
-        this.originalWidth = originalWidth;
+    public String getSourceName() {
+        return sourceName;
     }
 
     // abstract methods
@@ -43,8 +36,4 @@ public abstract class ImageSource {
     public abstract void CloseSource();
 
     public abstract void SetupSource();//init the source
-
-    public String getSourceName() {
-        return sourceName;
-    }
 }

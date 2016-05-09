@@ -2,6 +2,7 @@ package com.example.moran_lap.projbitmapv11;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +45,7 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
             holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                     DragNDropListView listView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
                     int pos = listView.getPositionForView(buttonView);
                     if (pos != ListView.INVALID_POSITION) {
@@ -74,8 +76,10 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
         notifyDataSetChanged();
         for (SurfaceComponent sc : surfaceComponents){
             if (sc.isEnabled()){
-                Bitmap tempBitmap = sc.DrawSurfaceComponentOnBitmap();
-                composer.getImageView().setImageBitmap(tempBitmap);
+
+                Bitmap bitmapToDraw = sc.DrawSurfaceComponentOnBitmap();
+                Canvas canvas = new Canvas(composer.getBitmap());
+                canvas.drawBitmap(bitmapToDraw, sc.getImagePositionOnSurface().getxStart(), sc.getImagePositionOnSurface().getyStart(), null);
                 composer.getImageView().invalidate();
             }
         }

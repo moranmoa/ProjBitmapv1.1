@@ -13,7 +13,7 @@ public class PictureSource extends ImageSource {
 
     @Override
     public Bitmap getImage() {
-        return null;
+        return originalSourceBitmap;
     }
 
     @Override
