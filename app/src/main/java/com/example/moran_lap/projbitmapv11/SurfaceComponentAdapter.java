@@ -27,19 +27,20 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
 
     private List<SurfaceComponent> surfaceComponents;
     private Context context;
-    private List<SurfaceComponentsHolder> holders;
     private MainActivity mainActivity;
+    private ListView listView;
 
-    public SurfaceComponentAdapter(List<SurfaceComponent> surfaceComponents,ArrayList<Map<String, String>> mapData, MainActivity mainActivity){
+    public SurfaceComponentAdapter(List<SurfaceComponent> surfaceComponents,ArrayList<Map<String, String>> mapData,
+                                   ListView listView, MainActivity mainActivity){
         super(ApplicationContext.getActivity(), mapData,R.layout.single_listview_item, new String[]{"text"},new int[]{R.id.sourcename},R.id.sourcename);
         this.surfaceComponents = surfaceComponents;
         context = ApplicationContext.getActivity();
-        holders = new ArrayList<>();
         this.mainActivity = mainActivity;
+        this.listView = listView;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View v = convertView;
         SurfaceComponentsHolder holder = new SurfaceComponentsHolder();
 
@@ -49,6 +50,7 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
             holder.SourceName = (TextView) v.findViewById(R.id.sourcename);
             holder.optionsButton = (ImageButton) v.findViewById(R.id.options_button);
             holder.optionsButton.setOnClickListener(new View.OnClickListener(){
+
                 @Override
                 public void onClick(View v) {
                     //Creating the instance of PopupMenu
@@ -64,10 +66,11 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
 
                                     break;
                                 case (R.id.configure_surface_component) :
-
+                                    SurfaceComponent sComponente = surfaceComponents.get(position);
+                                    sComponente.getImageSource().EditSource();
                                     break;
                                 case (R.id.delete_surface_component) :
-
+                                    surfaceComponents.remove(surfaceComponents.get(position));
                                     break;
                             }
                             ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
@@ -100,7 +103,6 @@ public class SurfaceComponentAdapter extends DragNDropSimpleAdapter {
         }
         SurfaceComponent sp = surfaceComponents.get(position);
         holder.SourceName.setText(sp.getSurfaceComponentName());
-        holders.add(holder);
         return v;
     }
 

@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
             map.put("sourceName", sc.getSurfaceComponentName());
             mapData.add(map);
         }
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,this);
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,mListView,this);
         mListView.setDragNDropAdapter(SCadapter);
         reversedSurfaceComponents.clear();
     }

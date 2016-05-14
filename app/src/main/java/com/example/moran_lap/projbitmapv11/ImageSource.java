@@ -36,4 +36,6 @@ public abstract class ImageSource {
     public abstract void CloseSource();
 
     public abstract void SetupSource();//init the source
+
+    public abstract void EditSource();
 }

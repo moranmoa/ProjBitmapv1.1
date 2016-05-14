@@ -30,4 +30,9 @@ public class PictureSource extends ImageSource {
     public void SetupSource() {
 
     }
+
+    @Override
+    public void EditSource() {
+
+    }
 }

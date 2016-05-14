@@ -38,4 +38,9 @@ public class ScreenSource extends ImageSource {
     public void SetupSource() {
 
     }
+
+    @Override
+    public void EditSource() {
+
+    }
 }

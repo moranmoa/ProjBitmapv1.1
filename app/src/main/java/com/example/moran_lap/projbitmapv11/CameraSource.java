@@ -30,4 +30,9 @@ public class CameraSource extends ImageSource {
     public void SetupSource() {
 
     }
+
+    @Override
+    public void EditSource() {
+
+    }
 }
