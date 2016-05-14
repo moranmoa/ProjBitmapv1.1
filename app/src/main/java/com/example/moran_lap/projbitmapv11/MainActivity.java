@@ -1,15 +1,10 @@
 package com.example.moran_lap.projbitmapv11;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -20,34 +15,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
+
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Map;
 
 import dragndroplist.DragNDropListView;
 
-public class MainActivity extends AppCompatActivity implements android.widget.CompoundButton.OnCheckedChangeListener{
+public class MainActivity extends AppCompatActivity {
 
     private Composer mComposer;
 
     // ImageView - Preview
     private ImageView mImageView;
     private static int RESULT_LOAD_IMG = 1;
-    private String imgDecodableString;
 
     // DragNDropListView - SurfaceComponents with checkboxes
     private DragNDropListView mListView;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
-    private ArrayList<Map<String, String>> mapData;
+    private ArrayList mapData;
 
     // Buttons - StreamButton and plus button to add SurfaceComponents
     private Button mStreamButton;
@@ -109,14 +100,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 //mImageView.refreshDrawableState();
                                 break;
                             case (R.id.image_source) :
-                                // Add PictureSource
-                                //mSurfaceComponents.add(new SurfaceComponent(new PictureSource()));
                                 loadImageFromGallery();
-
-                                // create new Bitmap
-                                //ImageBitmap = Bitmap.createBitmap(mComposer.getBitmap(),0,0,600,300);
-                                //mImageView.invalidate();
-                                //mImageView.refreshDrawableState();
                                 break;
                             case (R.id.text_source) :
                                 String text = "Test Text Source";
@@ -131,9 +115,6 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                                 //synchronized (mObj) {
                                 //    mObj.notify();
                                 //}
-                                //paint.setColor(Color.BLUE);
-                                //canvas.drawRect(20F, 300F, 200F, 400F, paint);
-                                //mImageView.invalidate();
                                 break;
                         }
                         ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
@@ -169,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                 cursor.moveToFirst(); // Move to first row
                 int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
 
-                imgDecodableString = cursor.getString(columnIndex);
+                String imgDecodableString = cursor.getString(columnIndex);
                 cursor.close();
 
                 File image = new File(imgDecodableString);
@@ -196,27 +177,17 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
         }
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        int pos = mListView.getPositionForView(buttonView);
-        if (pos != ListView.INVALID_POSITION) {
-            SurfaceComponent sp = mSurfaceComponents.get(pos);
-            sp.setIsEnabled(isChecked);
-            Toast.makeText(ApplicationContext.getActivity(),"Clicked on Source " + sp.getImageSource().getSourceName() +" State is: " + sp.isEnabled(), Toast.LENGTH_SHORT).show();
-        }
-    }
-
     private void InitializeListView(){
 
         mapData = new ArrayList();
         mListView.setOnItemDragNDropListener(new DragNDropListView.OnItemDragNDropListener() {
             @Override
             public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
-
             }
 
             @Override
             public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
+
                 SurfaceComponent temp = mSurfaceComponents.get(startPosition);
                 if (startPosition < endPosition)
                     for (int i = startPosition; i < endPosition; ++i)
@@ -225,24 +196,45 @@ public class MainActivity extends AppCompatActivity implements android.widget.Co
                     for (int i = startPosition; i > endPosition; --i)
                         mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
                 mSurfaceComponents.set(endPosition, temp);
+
+                onListViewChanged();
             }
         });
     }
 
-    private void refreshSurfaceComponentsList() {
+    public void onListViewChanged(){
+        refreshSurfaceComponentsList();
+        refreshSurfaceComponentsOnBitmap();
+    }
+
+    public void refreshSurfaceComponentsList() {
         mapData.clear();
+        ArrayList<SurfaceComponent> reversedSurfaceComponents = new ArrayList<>(mSurfaceComponents);
+        Collections.reverse(reversedSurfaceComponents);
         for (SurfaceComponent sc : mSurfaceComponents) {
             HashMap<String, String> map = new HashMap();
             map.put("sourceName", sc.getSurfaceComponentName());
             mapData.add(map);
         }
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,mComposer);
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,this);
         mListView.setDragNDropAdapter(SCadapter);
+        reversedSurfaceComponents.clear();
     }
 
-    public void onListViewChanged(){
-        refreshSurfaceComponentsList();
-        SCadapter.refreshSurfaceComponentsOnBitmap();
+    public void refreshSurfaceComponentsOnBitmap(){
+        mComposer.initBitmap();
+        //SCadapter.notifyDataSetChanged();
+        ArrayList<SurfaceComponent> reversedSurfaceComponents = new ArrayList<>(mSurfaceComponents);
+        Collections.reverse(reversedSurfaceComponents);
+        for (SurfaceComponent sc : reversedSurfaceComponents){
+            if (sc.isEnabled()){
+                Bitmap bitmapToDraw = sc.DrawSurfaceComponentOnBitmap();
+                Canvas canvas = new Canvas(mComposer.getBitmap());
+                canvas.drawBitmap(bitmapToDraw, sc.getImagePositionOnSurface().getxStart(), sc.getImagePositionOnSurface().getyStart(), null);
+                //mComposer.getImageView().invalidate();
+            }
+        }
+        //SCadapter.notifyDataSetChanged();
     }
 
     @Override

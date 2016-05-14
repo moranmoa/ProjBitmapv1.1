@@ -12,12 +12,6 @@
     tools:context="com.example.moran_lap.projbitmapv11.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -26,6 +20,8 @@
             android:layout_gravity="center_horizontal" />
 
         <dragndroplist.DragNDropListView
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_below="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/listView"
@@ -36,7 +32,7 @@
             android:layout_height="wrap_content"
             android:text="Start Stream"
             android:id="@+id/streamButton"
-            android:layout_gravity="bottom|right"/>
+            android:layout_alignParentBottom="true"
+            />
 
-    </LinearLayout>
 </RelativeLayout>

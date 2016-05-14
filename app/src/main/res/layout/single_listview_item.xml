@@ -10,6 +10,14 @@
         android:layout_alignParentLeft="true"
         android:checked="true"/>
 
+    <ImageButton
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:id="@+id/options_button"
+        android:layout_centerInParent="true"
+        android:background="@drawable/options"
+        />
+
     <TextView
         android:id="@+id/sourcename"
         android:layout_width="match_parent"
