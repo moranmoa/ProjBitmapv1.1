@@ -10,7 +10,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,9 +25,6 @@ import android.widget.Toast;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-
-import dragndroplist.DragNDropListView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,10 +35,11 @@ public class MainActivity extends AppCompatActivity {
     private static int RESULT_LOAD_IMG = 1;
 
     // DragNDropListView - SurfaceComponents with checkboxes
-    private DragNDropListView mListView;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
     private static SurfaceComponentAdapter SCadapter;
     private ArrayList<SurfaceComponent> mSurfaceComponents;
-    private ArrayList mapData;
 
     // Buttons - StreamButton and plus button to add SurfaceComponents
     private Button mStreamButton;
@@ -63,8 +64,19 @@ public class MainActivity extends AppCompatActivity {
         mSurfaceComponents = mComposer.getmSurfaceComponents();
         // Start Composer Thread to work - consider activate on first addition of SurfaceComponent or wait and signal
         //((Thread)mComposer).start();
-        mListView = (DragNDropListView) ApplicationContext.getActivity().findViewById(R.id.listView);
-        InitializeListView();
+        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        // use this setting to improve performance if you know that changes
+        // in content do not change the layout size of the RecyclerView
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,this);
+        mRecyclerView.setAdapter(SCadapter);
+
+        ItemTouchHelper.Callback callback =
+                new SimpleItemTouchHelperCallback(SCadapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(mRecyclerView);
 
         mStreamButton = (Button) findViewById(R.id.streamButton);
         mStreamButton.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                                 //}
                                 break;
                         }
-                        ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
+                        onListViewChanged();
                         return true;
                     }
                 });
@@ -177,53 +189,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void InitializeListView(){
-
-        mapData = new ArrayList();
-        mListView.setOnItemDragNDropListener(new DragNDropListView.OnItemDragNDropListener() {
-            @Override
-            public void onItemDrag(DragNDropListView parent, View view, int position, long id) {
-            }
-
-            @Override
-            public void onItemDrop(DragNDropListView parent, View view, int startPosition, int endPosition, long id) {
-
-                SurfaceComponent temp = mSurfaceComponents.get(startPosition);
-                if (startPosition < endPosition)
-                    for (int i = startPosition; i < endPosition; ++i)
-                        mSurfaceComponents.set(i, mSurfaceComponents.get(i + 1));
-                else if (endPosition < startPosition)
-                    for (int i = startPosition; i > endPosition; --i)
-                        mSurfaceComponents.set(i, mSurfaceComponents.get(i - 1));
-                mSurfaceComponents.set(endPosition, temp);
-
-                onListViewChanged();
-            }
-        });
-    }
-
     public void onListViewChanged(){
-        refreshSurfaceComponentsList();
         refreshSurfaceComponentsOnBitmap();
     }
 
-    public void refreshSurfaceComponentsList() {
-        mapData.clear();
-        ArrayList<SurfaceComponent> reversedSurfaceComponents = new ArrayList<>(mSurfaceComponents);
-        Collections.reverse(reversedSurfaceComponents);
-        for (SurfaceComponent sc : mSurfaceComponents) {
-            HashMap<String, String> map = new HashMap();
-            map.put("sourceName", sc.getSurfaceComponentName());
-            mapData.add(map);
-        }
-        SCadapter = new SurfaceComponentAdapter(mSurfaceComponents,mapData,mListView,this);
-        mListView.setDragNDropAdapter(SCadapter);
-        reversedSurfaceComponents.clear();
-    }
-
     public void refreshSurfaceComponentsOnBitmap(){
+        SCadapter.swap((ArrayList<SurfaceComponent>) mSurfaceComponents.clone());
         mComposer.initBitmap();
-        //SCadapter.notifyDataSetChanged();
         ArrayList<SurfaceComponent> reversedSurfaceComponents = new ArrayList<>(mSurfaceComponents);
         Collections.reverse(reversedSurfaceComponents);
         for (SurfaceComponent sc : reversedSurfaceComponents){
@@ -231,10 +203,8 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap bitmapToDraw = sc.DrawSurfaceComponentOnBitmap();
                 Canvas canvas = new Canvas(mComposer.getBitmap());
                 canvas.drawBitmap(bitmapToDraw, sc.getImagePositionOnSurface().getxStart(), sc.getImagePositionOnSurface().getyStart(), null);
-                //mComposer.getImageView().invalidate();
             }
         }
-        //SCadapter.notifyDataSetChanged();
     }
 
     @Override

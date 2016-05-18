@@ -29,4 +29,5 @@ dependencies {
     compile files('libs/rtmp/ffmpeg.jar')
     compile files('libs/rtmp/javacpp.jar')
     compile files('libs/rtmp/javacv.jar')
+    compile project(':RecycleView')
 }
