@@ -55,53 +55,53 @@ public class Composer extends Thread {
         return mBitmap;
     }
 
-    public void run() {
-        try {
-            synchronized (mObj) {
-                mObj.wait();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while (true) {
-            if (mSurfaceComponents != null) {
-                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-                    if (surfaceComponent.isEnabled()) {
-                        surfaceComponent.start();
-                    }
-                }
-                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-                    try {
-                        surfaceComponent.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-        /*
-        for(int i=0; i<1280; i++)
-            for(int j=0; j<720; j++) {
-                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-                    if (surfaceComponent.isEnabled()) {
-                        if (i>=)
-                    }
-                }
-            }
-            */
-                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
-                    if (surfaceComponent.isEnabled()) {
-                       // paint.setColor(Color.GREEN);
-                       // canvas.drawRect(20F, 300F, 180F, 400F, paint);
-                        //mBitmap=surfaceComponent.getBitmap();
-                    }
-                }
-            }
-            try {
-                sleep(30);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    public void run() {
+//        try {
+//            synchronized (mObj) {
+//                mObj.wait();
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        while (true) {
+//            if (mSurfaceComponents != null) {
+//                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+//                    if (surfaceComponent.isEnabled()) {
+//                        surfaceComponent.start();
+//                    }
+//                }
+//                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+//                    try {
+//                        surfaceComponent.join();
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//        /*
+//        for(int i=0; i<1280; i++)
+//            for(int j=0; j<720; j++) {
+//                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+//                    if (surfaceComponent.isEnabled()) {
+//                        if (i>=)
+//                    }
+//                }
+//            }
+//            */
+//                for (SurfaceComponent surfaceComponent : mSurfaceComponents) {
+//                    if (surfaceComponent.isEnabled()) {
+//                       // paint.setColor(Color.GREEN);
+//                       // canvas.drawRect(20F, 300F, 180F, 400F, paint);
+//                        //mBitmap=surfaceComponent.getBitmap();
+//                    }
+//                }
+//            }
+//            try {
+//                sleep(30);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 }
 
 

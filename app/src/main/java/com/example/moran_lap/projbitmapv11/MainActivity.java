@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch(item.getItemId()){
                             case (R.id.camera_source) :
-                                mSurfaceComponents.add(new SurfaceComponent(new CameraSource()));
+                                mSurfaceComponents.add(new SurfaceComponent(new CameraSource(),new Position()));
                                 //paint.setColor(Color.GREEN);
                                 //canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
                                 //mImageView.invalidate();

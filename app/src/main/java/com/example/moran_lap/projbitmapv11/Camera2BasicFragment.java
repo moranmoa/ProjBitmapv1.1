@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Point;
@@ -57,7 +58,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Camera2BasicFragment extends Fragment
         implements View.OnClickListener, FragmentCompat.OnRequestPermissionsResultCallback {
-
+    static Bitmap mBitmap;
     /**
      * Conversion from screen rotation to JPEG orientation.
      */
@@ -332,6 +333,8 @@ public class Camera2BasicFragment extends Fragment
 
     };
 
+
+
     /**
      * Shows a {@link Toast} on the UI thread.
      *
@@ -405,7 +408,7 @@ public class Camera2BasicFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_camera2_basic, container, false);
+        return inflater.inflate(R.layout.content_main, container, false);//moa fragment_camera2_basic
     }
 
     @Override
@@ -413,6 +416,7 @@ public class Camera2BasicFragment extends Fragment
         view.findViewById(R.id.picture).setOnClickListener(this);
         view.findViewById(R.id.info).setOnClickListener(this);
         mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
+        //mTextureView = (AutoFitTextureView) view.findViewById(R.id.texture);
     }
 
     @Override
@@ -1015,4 +1019,11 @@ public class Camera2BasicFragment extends Fragment
         }
     }
 
+    public static Bitmap getImage() {
+        Bitmap image;
+        //takePicture();
+
+        image=null;
+        return image;
+    }
 }
