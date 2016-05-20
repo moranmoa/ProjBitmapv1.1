@@ -1,13 +1,18 @@
 package com.example.moran_lap.projbitmapv11;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -73,7 +78,44 @@ public class SurfaceComponentAdapter extends RecyclerView.Adapter<SurfaceCompone
                         switch(item.getItemId())
                         {
                             case (R.id.set_position) :
+                                AlertDialog.Builder builder = new AlertDialog.Builder(ApplicationContext.getActivity());
+                                builder.setTitle("Insert position here");
 
+                                // Get the layout inflater
+                                LayoutInflater inflater = ApplicationContext.getActivity().getLayoutInflater();
+
+                                final View setPositionView = inflater.inflate(R.layout.edit_position_layout, null);
+
+                                // Inflate and set the layout for the dialog
+                                // Pass null as the parent view because its going in the dialog layout
+                                builder.setView(setPositionView)
+                                // Set up the buttons
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        TextView xStartView = (TextView)setPositionView.findViewById(R.id.x_start);
+                                        TextView xEndView = (TextView)setPositionView.findViewById(R.id.x_end);
+                                        TextView yStartView = (TextView)setPositionView.findViewById(R.id.y_start);
+                                        TextView yEndView = (TextView)setPositionView.findViewById(R.id.y_end);
+
+                                        int xStart = Integer.parseInt(xStartView.getText().toString());
+                                        int xEnd = Integer.parseInt(xEndView.getText().toString());
+                                        int yStart = Integer.parseInt(yStartView.getText().toString());
+                                        int yEnd = Integer.parseInt(yEndView.getText().toString());
+
+                                        SurfaceComponent sComponent = surfaceComponents.get(position);
+                                        Position newPosition = new Position(xStart,xEnd,yStart,yEnd);
+                                        sComponent.setImagePositionOnSurface(newPosition);
+                                        ((MainActivity)ApplicationContext.getActivity()).onListViewChanged();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                builder.show();
                                 break;
                             case (R.id.configure_surface_component) :
                                 SurfaceComponent sComponent = surfaceComponents.get(position);
