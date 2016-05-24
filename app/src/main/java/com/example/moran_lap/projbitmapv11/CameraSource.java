@@ -2,6 +2,7 @@ package com.example.moran_lap.projbitmapv11;
 
 import android.graphics.Bitmap;
 import android.view.View;
+import android.widget.ImageView;
 
 
 /**
@@ -22,11 +23,14 @@ public class CameraSource extends ImageSource {
 
     @Override
     public Bitmap getImage() {
+        ImageView v2;
+        //v2 = ApplicationContext.getActivity().findViewById(R.id.texture);
         View v1;
         v1 = ApplicationContext.getActivity().getWindow().getDecorView().getRootView();
         //v1 = getWindow().getDecorView().getRootView();
         v1.setDrawingCacheEnabled(true);
         Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+
         v1.setDrawingCacheEnabled(false);
 
         return bitmap;
