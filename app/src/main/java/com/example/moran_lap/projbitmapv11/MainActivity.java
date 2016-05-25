@@ -46,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private Boolean startStream = true;
     private FloatingActionButton fab;
 
+    CameraSource CameraSource;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize View components
         mImageView = (ImageView)findViewById(R.id.imageView);
-
+        CameraSource = new CameraSource();
         //final Composer mComposer = new Composer();
         mComposer = new Composer();
         mSurfaceComponents = mComposer.getmSurfaceComponents();
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem item) {
                         switch(item.getItemId()){
                             case (R.id.camera_source) :
-                                mSurfaceComponents.add(new SurfaceComponent(new CameraSource(),new Position()));
+                                mSurfaceComponents.add(new SurfaceComponent(CameraSource,new Position()));
                                 //paint.setColor(Color.GREEN);
                                 //canvas.drawRect(20F, 300F, 180F, 400F, paint); // left top right bottom
                                 //mImageView.invalidate();

@@ -54,7 +54,7 @@
             tools:context="com.example.android.camera2basic.CameraActivity"
             android:layout_below="@+id/recyclerView"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="0dp" />
+            android:layout_marginTop="90000dp" />
 
         <com.example.moran_lap.projbitmapv11.AutoFitTextureView
             android:id="@+id/texture"
